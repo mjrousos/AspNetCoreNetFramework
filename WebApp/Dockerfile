@@ -1,4 +1,5 @@
 # Use Server Core ASP.NET base image to have access to IIS
+# https://hub.docker.com/_/microsoft-dotnet-framework/
 FROM mcr.microsoft.com/dotnet/framework/aspnet:4.8-windowsservercore-ltsc2022
 
 # Install ASP.NET Core Module (https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/aspnet-core-module?view=aspnetcore-2.1)
