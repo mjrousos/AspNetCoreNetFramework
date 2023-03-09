@@ -1,3 +1,15 @@
+# Build stage
+# Use .NET Framework SDK as the base build image
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2022 AS build
+
+WORKDIR /src
+COPY ["WebApp.csproj", "WebApp.csproj"]
+RUN dotnet restore
+COPY . .
+RUN dotnet build
+RUN dotnet publish -c Release
+
+# Run stage
 # Use Server Core ASP.NET base image to have access to IIS
 # https://hub.docker.com/_/microsoft-dotnet-framework/
 FROM mcr.microsoft.com/dotnet/framework/aspnet:4.8-windowsservercore-ltsc2022
@@ -11,7 +23,7 @@ WORKDIR /inetpub/wwwroot
 
 # Replace IIS wwwroot with app; this will listen (on port 80) via IIS
 RUN powershell -NoProfile -Command Remove-Item -Recurse C:\inetpub\wwwroot\*
-COPY bin/Release/net48/publish .
+COPY --from=build /src/bin/Release/net48/publish .
 
 # This will listen (on port 5000) with Kestrel directly
 ENTRYPOINT [ "WebApp.exe", "--urls", "http://*:5000"]
